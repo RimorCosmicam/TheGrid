@@ -46,4 +46,8 @@ PLIST
 printf '</plist>\n' >> "$APP/Contents/Info.plist"
 
 codesign --force --sign - "$APP"
-echo "built $APP"
+
+# Zipped with ditto rather than zip, which keeps the bundle's structure intact: what comes out
+# the other end of a download is still an app.
+(cd dist && rm -f TheGrid.zip && ditto -c -k --keepParent TheGrid.app TheGrid.zip)
+echo "built $APP and dist/TheGrid.zip"
