@@ -15,7 +15,7 @@ jobs:
       # Only used by the release step, and only on a tag.
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build
         run: swift build -c release
@@ -26,7 +26,7 @@ jobs:
       - name: Package
         run: ./scripts/build-app.sh
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: TheGrid-app
           path: dist/TheGrid.zip
