@@ -1,0 +1,45 @@
+name: build
+
+# One job, because the whole thing is one question: does it still build, do the ring's own tests
+# pass, and does the app come out the other end. The tests need no glasses, no windows and no
+# permission, which is why they can run on a machine in a data centre at all.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    permissions:
+      # Only used by the release step, and only on a tag.
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: swift build -c release
+
+      - name: Test
+        run: swift run -c release gridtests
+
+      - name: Package
+        run: ./scripts/build-app.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TheGrid-app
+          path: dist/TheGrid.zip
+
+      # Pushing a tag like v0.2.0 publishes the app that was just built against it. The release
+      # is made if it is not there already, and the zip replaces whatever was attached before, so
+      # a tag pushed twice does not end up with two copies of the app.
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release view "$TAG" >/dev/null 2>&1 \
+            || gh release create "$TAG" --title "TheGrid ${TAG#v}" --generate-notes
+          gh release upload "$TAG" dist/TheGrid.zip --clobber
