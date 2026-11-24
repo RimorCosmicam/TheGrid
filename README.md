@@ -92,26 +92,6 @@ many go round the ring. Six slots round is a tight circle; twenty-four is a wall
 sets how far a swipe turns it and how much scrolling makes a slot, and *Backdrop* how solid the
 panel behind the slots is, from solid black to a faint wash with the desktop coming through.
 
-## What the glasses taught it
-
-Three things only turned up with the hardware on, and each is a line in the code that looks
-arbitrary until you know why:
-
-- **The glasses have a menu bar.** With *Displays have separate Spaces* on, which is the default,
-  every screen carries one, and macOS quietly drops any window asked to sit under it 30 points
-  lower. The ring is laid out in the screen's usable area, not its bounds, or every slot in the
-  top row would be out of line with the row beneath.
-- **A window cannot be moved entirely out of sight.** Ask for a position further off than the
-  edge and macOS keeps 40 points of the window on the nearest screen, measured and consistent.
-  So the grid leaves a 40 point margin down each side of the glasses, masks it with a strip that
-  sits above every window, and parks the far side of the ring underneath: a window on its way out
-  slides behind the edge instead of pinning a stripe of itself there.
-- **Position, then size, then position.** An app clamps a window to the screen it is on at that
-  moment, so sizing first asks for a window taller than the Mac's own screen and gets the Mac's
-  screen height back. Moving it onto the glasses first means the size is measured against the
-  glasses. Even then an app can be too busy to answer, so the housekeeping compares where each
-  window is with where it should be and asks again, three times, before letting it be.
-
 ## How it works
 
 `GridCore` is the ring, and knows nothing about macOS beyond CoreGraphics' idea of a rectangle:
